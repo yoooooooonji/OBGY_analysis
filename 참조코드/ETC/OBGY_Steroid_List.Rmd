@@ -1,0 +1,106 @@
+---
+output:
+  html_document: default
+  word_document: default
+---
+<div align = "center">
+
+# **임신 중 스테로이드 사용에 따른 주산기 예후 분석**
+
+</div>
+
+## **Table of contents**
+
+1. [Flowchart](#flowchart)
+2. [전체 cohort에 대한 EDA](#total_eda)
+3. [연구주제 1. 덱사메타손, 타메존주만 맞은 그룹군](#project1)
+   1. [연구주제 1 - cohort EDA ](#project1_EDA)
+4. [연구주제 2 - 스테로이드 누적 투여량에 따른 neonatal outcome 분석](#project2)
+    1. [연구주제 2 - cohort EDA](#project2_EDA)
+    2. [스테로이드 누적 투여량과 outcome과의 상관관계](#correlation_explain)
+        1. [correlation of GA](#cor_GA)
+        2. [correlation of 재원기간](#cor_재원기간)
+        3. [correlation of 태반길이](#cor_태반길이)
+        4. [correlation of 태반중량](#cor_태반중량)
+        5. [correlation of Apgar_Score_1](#cor_Apgar_Score1)
+        6. [correlation of Apgar_Score_5](#cor_Apgar_Score5)
+        7. [correlation of 출생시체중](#cor_kg)
+
+<br />
+
+## **1. Flowchart <a name="flowchart"><\a>**
+
+```{r fig1, echo=FALSE, fig.cap='**flow chart**', fig.align = "center", fig.show = "hold", out.width = "50%"}
+knitr::include_graphics("C:/OBGY_R_markdown/flow_chart.png")
+```
+
+
+## **2.전체 cohort에 대한 EDA <a name="total_eda"></a>**
+
+전체 실험군은 다음과 같이 분리하였습니다. <br>
+
+```{r fig2, echo=FALSE, fig.cap='**실험군 분리**', fig.align = "center", fig.show = "hold", out.width = "100%"}
+knitr::include_graphics("C:/OBGY_R_markdown/figure_2.png")
+```
+
+추가로 b_prime, b_rest, c_prime, c_rest 그룹을 생성하였습니다. <br />
+
+* b_prime : 임신 전 스테로이드 복용하였으나, 임신 후 복용하던 약은 중단하였고 덱사메타손, 타메존주만 복용한 그룹. <br />
+* b_rest : 전체 b 그룹에서 b_prime 제외한 나머지 그룹. <br />
+* c_prime : 임신 후 타메존주, 덱사메타손만 복용한 그룹. <br />
+* c_rest : 전체 c 그룹에서 c_prime 제외한 나머지 그룹.  <br />
+
+[전체 cohort에 대한 EDA](C:/OBGY_R_markdown/R_markdown/OBGY_total_EDA_v4.html)<br />
+
+## **3. 연구주제 1. 덱사메타손, 타메존주만 맞은 그룹군 <a name="project1"></a>**
+대조군과 실험군(b_prime, c_prime)으로 분리하여 EDA를 산출하였습니다. <br />
+실험군의 경우 마지막 투여일의 GA를 기준으로 3가지 그룹으로 추가 분리하였습니다. <br />
+
+* first_group : 마지막 투여일의 GA가 28주 미만인 그룹 <br />
+* second_group : 마지막 투여일이 GA 기준 28주 이상 ~ 34주 이하인 그룹 <br />
+* third_group : 마지막 투여일이 GA 기준 34주 초과인 그룹 <br />
+
+추후 대조군과 실험군을 GA, AGE로 매칭하여 outcome을 비교할 예정입니다. 
+
+### **3-1. 연구주제 1 :  EDA <a name="project1_EDA"></a>**
+[연구주제 1 cohort에 대한 EDA](C:/OBGY_R_markdown/R_markdown/OBGY_Project_1_EDA.html)<br />
+
+## **4. 연구주제 2. 스테로이드 누적 투여량에 따른 신생아 outcome 분석 <a name="project2"></a>**
+대조군과 실험군(b_prime, exp_A, c_rest, b_rest)로 분리하여 EDA를 산출하였습니다. <br />
+실험군의 경우 스테로이드 복용 시기에 따라 두 그룹으로 분리하였습니다. <br />
+
+* test_group_before : 임신 추정일 전에 스테로이드를 복용한 그룹(b_prime, exp_A) <br />
+* test_group_after : 임신 추정일 후에 스테로이드를 복용한 그룹 (c_rest, b_rest) <br />
+
+### **4-1. 연구주제 2 : EDA <a name="project2_EDA"></a>**
+[연구주제 2 cohort에 대한 EDA](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_EDA.html)<br />
+
+### **4-2. 스테로이드 누적 투여량과 outcome과의 상관관계 <a name="correlation_explain"></a>**
+실험군의 누적 스테로이드 투여량과 outcome과의 상관관계를 확인하였습니다. <br />
+실험군의 누적 스테로이드 투여량은 다음과 같이 4구간으로 나눠 계산하였습니다.<br />
+
+* section 1 : 임신 추정일 1년 전 ~ 임신추정일 전<br />
+* section 2 : 임신 추정일 ~ 임신추정일 + 97<br />
+* section 3 : 임신 추정일 + 98 ~ 임신추정일 + 195<br />
+* section 4 : 임신 추정일 + 196 ~ 임신종결일 <br />
+
+#### **4-2-1. Correlation of GA <a name="cor_GA"></a>**
+[Correlation of GA](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_GA_pred.html)<br />
+
+#### **4-2-2. Correlation of 재원기간 <a name="cor_재원기간"></a>**
+[Correlation of 재원기간](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_재원기간_pred.html)<br />
+
+#### **4-2-3. Correlation of 태반길이 <a name="cor_태반길이"></a>**
+[Correlation of 태반길이](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_태반길이_pred.html)<br />
+
+#### **4-2-4. Correlation of 태반중량 <a name="cor_태반중량"></a>**
+[Correlation of 태반중량](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_태반중량_pred.html)<br />
+
+#### **4-2-5. Correlation of Apgar_Score1 <a name="cor_Apgar_Score1"></a>**
+ [Correlation of Apgar_Score1](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_Apgar.Score1_pred.html)<br />
+
+#### **4-2-6. Correlation of Apgar_Score5 <a name="cor_APgar_Score5"></a>**
+[Correlation of Apgar_Score5](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_Apgar.Score5_pred.html)<br />
+
+#### **4-2-7. Correlation of 출생시체중 <a name="cor_kg"></a>**
+[Correlation of 출생시체중](C:/OBGY_R_markdown/R_markdown/OBGY_Project_2_출생시체중_pred.html)<br />

@@ -1,0 +1,113 @@
+---
+title: "OBGY_Project_2_Apgar.Score1_pred"
+author: "노윤지"
+date: "2022-10-07"
+output: html_document
+---
+
+```{r env, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning= FALSE)
+library(tidyverse)
+library(knitr)
+library(gtsummary)
+library(labelled)
+library(summarytools)
+library(kableExtra)
+library(magrittr)
+```
+
+```{r,warning = FALSE, message = FALSE}
+source("R_code/find_Preg_Date.R")
+source("R_code/cohort_preg_date.R")
+source("R_code/split_group.R")
+source("R_code/project_2_EDA.R")
+source("R_code/project_2_drug.R")
+```
+
+##### section 1 = 임신 1년 전 ~ 임신추정일 전
+##### section 2 = 임신추정일 ~ 임신추정일 + 97
+##### section 3 = 임신추정일 + 98 ~ 임신추정일 + 195
+##### section 4 = 임신추정일 + 196 ~ 임신종결일
+
+### Correlation with Apgar.Score1 
+
+<center> **[Table 1.1] correlation of 타메존주 4mg** </center> 
+
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-BET4J','section2_DH-BET4J','section3_DH-BET4J','section4_DH-BET4J',
+                                   'sum_1to4_DH-BET4J','sum_2to4_DH-BET4J','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.2] correlation of 프란딘정 6mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-DFZ6' , 'section2_DH-DFZ6' , 'section3_DH-DFZ6' , 'section4_DH-DFZ6' ,
+                                   'sum_1to4_DH-DFZ6','sum_2to4_DH-DFZ6','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.3] correlation of 유한덱사메타손정0.5mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-DX0.5' ,'section2_DH-DX0.5' ,'section3_DH-DX0.5' ,'section4_DH-DX0.5' , 
+                                   'sum_1to4_DH-DX0.5','sum_2to4_DH-DX0.5','Apgar.Score1')],
+                  histrogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.4] correlation of 휴메딕스덱사메타손포스페이트이나트륨주사5mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-DX5J' ,'section2_DH-DX5J' ,'section3_DH-DX5J' ,'section4_DH-DX5J' ,
+                                   'sum_1to4_DH-DX5J','sum_2to4_DH-DX5J','Apgar.Score1')],
+                  histrogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.5] correlation of 프레디솔주사 125mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-MPD125J' ,'section2_DH-MPD125J' ,'section3_DH-MPD125J' ,'section4_DH-MPD125J' ,
+                                   'sum_1to4_DH-MPD125J','sum_2to4_DH-MPD125J','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+
+```
+
+<center> **[Table 1.6] correlation of 메치론정 4mg** </center> 
+```{r,message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section2_DH-MPD4' ,'section3_DH-MPD4' ,'section4_DH-MPD4' ,
+                                   'sum_1to4_DH-MPD4','sum_2to4_DH-MPD4','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.7] correlation of 프레디솔주사 500mg** </center> 
+
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-MPD500J','section2_DH-MPD500J' ,'section3_DH-MPD500J' ,'section4_DH-MPD500J' ,
+                                   'sum_1to4_DH-MPD500J','sum_2to4_DH-MPD500J','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+
+```
+
+<center> **[Table 1.8] correlation of 디솔린주 40mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-MPDS40J' ,'section2_DH-MPDS40J' ,'section3_DH-MPDS40J' ,'section4_DH-MPDS40J' ,
+                                   'sum_1to4_DH-MPDS40J','sum_2to4_DH-MPDS40J','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.9] correlation of 소론도정5mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-PD5' ,'section2_DH-PD5' ,'section3_DH-PD5' ,'section4_DH-PD5' ,
+                                   'sum_1to4_DH-PD5','sum_2to4_DH-PD5','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.10] correlation of 트리암시놀론주40mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-TRI40J' ,'section2_DH-TRI40J' ,'section3_DH-TRI40J' ,'section4_DH-TRI40J' ,
+                                   'sum_1to4_DH-TRI40J','sum_2to4_DH-TRI40J','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```
+
+<center> **[Table 1.11] correlation of 트리암시놀론주50mg** </center> 
+```{r message = FALSE, warning= FALSE}
+chart.Correlation(pr2_baby_pred[,c('section1_DH-TRI50J' ,'section2_DH-TRI50J' ,'section3_DH-TRI50J' ,'section4_DH-TRI50J' ,
+                                   'sum_1to4_DH-TRI50J','sum_2to4_DH-TRI50J','Apgar.Score1')],
+                  histogram = TRUE, method = "pearson")
+```

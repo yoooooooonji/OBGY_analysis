@@ -1,0 +1,71 @@
+---
+title: "타메존주_논문_table4_general.model_score_matching"
+
+author: "노윤지"
+date: "2023-01-05"
+output: html_document
+---
+
+```{r env, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warnings= FALSE)
+library(tidyverse)
+library(knitr)
+library(gtsummary)
+library(labelled)
+library(summarytools)
+library(kableExtra)
+library(magrittr)
+```
+
+```{r,warning = FALSE, message = FALSE}
+setwd("C:/Users/Owner/Documents/GitHub/OBGY_steroid")
+source("연구주제1_타메존주 논문/find_Preg_Date.R")
+source("연구주제1_타메존주 논문/cohort_preg_date.R")
+source("연구주제1_타메존주 논문/split_group.R")
+source("연구주제1_타메존주 논문/project1_dataset.R")
+source("연구주제1_타메존주 논문/general outcome/project1_general_model_dataset.R")
+source("연구주제1_타메존주 논문/general outcome/project1_general_model_score.R")
+source("연구주제1_타메존주 논문/general outcome/project1_general_score_match.R")
+```
+
+```{r}
+theme_gtsummary_compact()
+```
+
+### **[Table 1.1] **descriptive statistics of Maternal characteristics** {.tabset}
+#### **[3rd group]**
+```{r}
+dta_3rd <- dta_3rd[c(4,5,7:9,12,14,15,19,20,24,39,33:36,50:58)]
+
+dta_3rd %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+
+### **[Table 1.2] **descriptive statistics of Neonatal outcome** {.tabset}
+#### **[3rd_group]**
+```{r}
+n_baby_score <- n_baby_score[c(2:5,10,13:18,29:31,11,12,41:43,52:55,71,80,85,86,96,97,38,39,109,110)]
+n_baby_score  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+```
+
+
+
+
+
+
+
+
+
+
+

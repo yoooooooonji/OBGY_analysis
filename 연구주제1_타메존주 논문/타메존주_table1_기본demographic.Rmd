@@ -1,0 +1,155 @@
+---
+title: "타메존주_논문_table1_test/cotrol demographics"
+
+author: "노윤지"
+date: "2022-12-22"
+output: html_document
+---
+
+```{r env, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warnings= FALSE)
+library(tidyverse)
+library(knitr)
+library(gtsummary)
+library(labelled)
+library(summarytools)
+library(kableExtra)
+library(magrittr)
+```
+
+```{r,warning = FALSE, message = FALSE}
+setwd("C:/Users/Owner/Documents/GitHub/OBGY_steroid")
+
+source("연구주제1_타메존주 논문/find_Preg_Date.R")
+source("연구주제1_타메존주 논문/cohort_preg_date.R")
+source("연구주제1_타메존주 논문/split_group.R")
+source("연구주제1_타메존주 논문/project1_dataset.R")
+```
+
+```{r}
+theme_gtsummary_compact()
+
+pr1_mom_1 <- pr1_df_mom[c(4,5,7:9,12,14,15,19:21,24,32:34,40,43,48,50:57)] %>% 
+  filter(project1_sub_group == "1st_group" & type == "D") 
+
+pr1_mom_2 <- pr1_df_mom[c(4,5,7:9,12,14,15,19:21,24,32:34,40,43,48,50:57)] %>% 
+  filter(project1_sub_group == "2nd_group" & type == "D") 
+
+pr1_mom_3 <- pr1_df_mom[c(4,5,7:9,12,14,15,19:21,24,32:34,40,43,48,50:57)] %>% 
+  filter(project1_sub_group == "3rd_group" & type == "D") 
+
+```
+
+### **[Table 1.1] **descriptive statistics of Maternal characteristics** {.tabset}
+#### **[1st group]**
+```{r}
+pr1_mom_1 %>% 
+  tbl_summary(by = project1_group, 
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{mean} ({sd})", "{min}, {max}"),
+              missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), 
+                            all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+#### **[2nd group]**
+```{r}
+
+pr1_mom_2 %>% 
+  tbl_summary(by = project1_group, 
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{mean} ({sd})", "{min}, {max}"),
+              missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), 
+                            all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+#### **[3rd group]**
+```{r}
+
+pr1_mom_3 %>% 
+  tbl_summary(by = project1_group, 
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{mean} ({sd})", "{min}, {max}"),
+              missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), 
+                            all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+
+```{r}
+n_baby_1 <- n_baby_pr1[c(2:5,10,13:18,29:31,11,12,41:43,52:55,71,80,85,86,96,97,38,39,109,110)] %>% 
+  filter(project1_sub_group == "1st_group")
+
+n_baby_2 <- n_baby_pr1[c(2:5,10,13:18,29:31,11,12,41:43,52:55,71,80,85,86,96,97,38,39,109,110)] %>% 
+  filter(project1_sub_group == "2nd_group")
+
+n_baby_3 <- n_baby_pr1[c(2:5,10,13:18,29:31,11,12,41:43,52:55,71,80,85,86,96,97,38,39,109,110)] %>% 
+  filter(project1_sub_group == "3rd_group")
+
+```
+### **[Table 1.2] **descriptive statistics of Neonatal outcome** {.tabset}
+#### **[1st_group]**
+```{r}
+n_baby_1  %>% 
+  tbl_summary(by = project1_group, 
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{mean} ({sd})", "{min}, {max}"),
+              missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), 
+                            all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+```
+
+#### **[2nd_group]**
+```{r}
+n_baby_2  %>% 
+  tbl_summary(by = project1_group, 
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{mean} ({sd})", "{min}, {max}"),
+              missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), 
+                            all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+```
+
+#### **[3rd_group]**
+```{r}
+n_baby_3  %>% 
+  tbl_summary(by = project1_group, 
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{mean} ({sd})", "{min}, {max}"),
+              missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), 
+                            all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+```
+
+
+
+
+
+
+
+
+
+
+

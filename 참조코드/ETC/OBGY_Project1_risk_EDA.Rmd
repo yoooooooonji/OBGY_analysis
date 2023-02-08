@@ -1,0 +1,448 @@
+---
+title: "OBGY_Project_1_risk_EDA"
+author: "노윤지"
+date: "2022-11-09"
+output: html_document
+---
+
+```{r env, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warnings= FALSE)
+library(tidyverse)
+library(knitr)
+library(gtsummary)
+library(labelled)
+library(summarytools)
+library(kableExtra)
+library(magrittr)
+```
+
+```{r warning = FALSE, message = FALSE}
+source("R_code/find_Preg_Date.R")
+source("R_code/cohort_preg_date.R")
+source("R_code/split_group.R")
+source("R_code/project1_dataset.R")
+source("R_code/OBGY_Project1_model_dataset.R")
+source("R_code/project1_score.R")
+```
+
+[연구주제1_risk 모델링 결과](https://docs.google.com/spreadsheets/d/1BNffaL28VkWOjsfqjE2rPWH-lAJwytpbV8AAOCuRmjI/edit#gid=1527220855)<br/>
+
+
+### **[Graph of Score]*
+```{r warning = FALSE, message = FALSE}
+q1 <- ggplot(pr1_df_score,aes(x = score)) +
+  geom_density(alpha=0.6, adjust = 3) +
+  labs(tag = 'All_group')+
+  geom_vline(aes(xintercept = mean(score)),
+             color= "blue")+
+  geom_histogram(aes(y=..density..),alpha=0.5,
+                 position="identity")
+ 
+
+q2 <- ggplot(pr1_df_score,aes(x = score)) +
+  geom_density(alpha=0.6, adjust = 3) +
+  labs(tag = 'All_group')+
+  geom_vline(aes(xintercept = mean(score)),
+             color= "blue")+
+  geom_histogram(aes(y=..density..),alpha=0.5,
+                 position="identity")+
+  scale_x_continuous(limits = c(0,20), breaks = c(0,2.5,5,7.5,10,12.5,15,17.5,20))
+
+q1 
+q2
+```
+
+
+### **[Table 1.1] Summary of Maternal characteristics**{.tabset}
+#### **[Low risk]** 
+```{r}
+pr1_df_score_low <- pr1_df_score[c(7:21,23:25,41:44)] %>% 
+  filter(group_score == "low_risk")
+
+pr1_df_score_low$twin <- pr1_df_score_low$twin %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$전자간증 <- pr1_df_score_low$전자간증 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$PIH임신중고혈압 <- pr1_df_score_low$PIH임신중고혈압 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$고혈압 <- pr1_df_score_low$고혈압 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+
+pr1_df_score_low$산과력_출산력P <-pr1_df_score_low$산과력_출산력P  %>% factor(levels=c(0,1,2,3), labels = c("0","1","2","≥3"))
+pr1_df_score_low$산과력_출산력A <-pr1_df_score_low$산과력_출산력A  %>% factor(levels=c(0,1,2,3), labels = c("0","1","2","≥3"))
+
+pr1_df_score_low$저체중아 <- pr1_df_score_low$저체중아 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$태아성장지연 <- pr1_df_score_low$태아성장지연 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$태반조기박리 <- pr1_df_score_low$태반조기박리 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$부인과수술력 <- pr1_df_score_low$부인과수술력 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_low$자궁봉축술 <- pr1_df_score_low$자궁봉축술 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+
+pr1_df_score_low$입원횟수 <- pr1_df_score_low$입원횟수 %>% factor(levels = c(0,1,2,3,4,5,6), labels = c("0","1","2","3","4","5","6"))
+pr1_df_score_low$첫투약시기 <- pr1_df_score_low$첫투약시기 %>% factor(levels = c(0,1,2), labels = c("other","28주미만","28to34"))
+
+pr1_df_score_low$age <- pr1_df_score_low$age %>% factor(levels = c(1,2,3), labels = c("35세미만","35to39","40세이상"))
+pr1_df_score_low$bmi <- pr1_df_score_low$bmi %>% factor(levels = c(1,2,3,4,5), labels = c("저체중","정상","과체중","비만","초고도비만"))
+pr1_df_score_low$입원총기간 <- pr1_df_score_low$입원총기간 %>% factor(levels = c(1,2,3,4,5), labels = c("1day","2day","3day","4to10","over10"))
+
+pr1_df_score_low$GA_week <- as.numeric(pr1_df_score_low$GA_week)
+pr1_df_score_low$score <- as.numeric(pr1_df_score_low$score)
+
+var_label(pr1_df_score_low) <- list(project1_group = "Group(control/test)", age = "Age", GA_week = "Gestational wks of delivery", twin = "Twin", 산과력_출산력P = "Parity P", 산과력_출산력A = "Parity A")
+
+
+print(dfSummary(pr1_df_score_low, plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+#### **[High risk]** 
+```{r}
+pr1_df_score_high <- pr1_df_score[c(7:21,23:25,41:44)] %>% 
+  filter(group_score == "high_risk")
+
+pr1_df_score_high$twin <- pr1_df_score_high$twin %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$전자간증 <- pr1_df_score_high$전자간증 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$PIH임신중고혈압 <- pr1_df_score_high$PIH임신중고혈압 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$고혈압 <- pr1_df_score_high$고혈압 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+
+pr1_df_score_high$산과력_출산력P <-pr1_df_score_high$산과력_출산력P  %>% factor(levels=c(0,1,2,3), labels = c("0","1","2","≥3"))
+pr1_df_score_high$산과력_출산력A <-pr1_df_score_high$산과력_출산력A  %>% factor(levels=c(0,1,2,3), labels = c("0","1","2","≥3"))
+
+pr1_df_score_high$저체중아 <- pr1_df_score_high$저체중아 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$태아성장지연 <- pr1_df_score_high$태아성장지연 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$태반조기박리 <- pr1_df_score_high$태반조기박리 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$부인과수술력 <- pr1_df_score_high$부인과수술력 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+pr1_df_score_high$자궁봉축술 <- pr1_df_score_high$자궁봉축술 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+
+pr1_df_score_high$입원횟수 <- pr1_df_score_high$입원횟수 %>% factor(levels = c(0,1,2,3,4,5,6), labels = c("0","1","2","3","4","5","6"))
+pr1_df_score_high$첫투약시기 <- pr1_df_score_high$첫투약시기 %>% factor(levels = c(0,1,2), labels = c("other","28주미만","28to34"))
+
+pr1_df_score_high$age <- pr1_df_score_high$age %>% factor(levels = c(1,2,3), labels = c("35세미만","35to39","40세이상"))
+pr1_df_score_high$bmi <- pr1_df_score_high$bmi %>% factor(levels = c(1,2,3,4,5), labels = c("저체중","정상","과체중","비만","초고도비만"))
+pr1_df_score_high$입원총기간 <- pr1_df_score_high$입원총기간 %>% factor(levels = c(1,2,3,4,5), labels = c("1day","2day","3day","4to10","over10"))
+
+pr1_df_score_high$GA_week <- as.numeric(pr1_df_score_high$GA_week)
+pr1_df_score_high$score <- as.numeric(pr1_df_score_high$score)
+
+var_label(pr1_df_score_high) <- list(project1_group = "Group(control/test)", age = "Age", GA_week = "Gestational wks of delivery", twin = "Twin", 산과력_출산력P = "Parity P", 산과력_출산력A = "Parity A")
+
+
+print(dfSummary(pr1_df_score_high, plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+
+### **[Table 1.2] Summary of Neonatal outcome**{.tabset}
+#### **Low risk**
+```{r}
+n_baby_pr1_low<-  n_baby_score[c(2:5,10,13:18,29:31,41:43,52:55,71,80,85:86,96:97,38:39,109)] %>% 
+  filter(group_score == "low_risk")
+
+n_baby_pr1_low$유도분만 <-n_baby_pr1_low$유도분만 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_low$성별 <-n_baby_pr1_low$성별 %>% factor(levels=c(0,1), labels =c("Female","Male"))
+n_baby_pr1_low$분만형태_코드 <- n_baby_pr1_low$분만형태_코드 %>% factor(levels =c(0,1), labels = c("No", "Yes"))
+n_baby_pr1_low$병실 <- n_baby_pr1_low$병실 %>% factor(levels =c(0,1), labels = c("No", "Yes"))
+
+n_baby_pr1_low$Apgar.Score1_v2 <-n_baby_pr1_low$Apgar.Score1_v2  %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)")) 
+n_baby_pr1_low$Apgar.Score5_v2 <-n_baby_pr1_low$Apgar.Score5_v2 %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)"))
+
+n_baby_pr1_low$PROM <-n_baby_pr1_low$PROM %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_low$태변착색 <-n_baby_pr1_low$태변착색 %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_low$True.knot <-n_baby_pr1_low$True.knot %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_low$Nuchal.cord <-n_baby_pr1_low$Nuchal.cord %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_low$산소흡입 <-n_baby_pr1_low$산소흡입 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_low$심폐소생술.유무 <-n_baby_pr1_low$심폐소생술.유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+
+n_baby_pr1_low$치료결과 <-n_baby_pr1_low$치료결과 %>% factor(levels=c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"), labels =c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"))
+
+n_baby_pr1_low$출생시체중 <-as.numeric(n_baby_pr1_low$출생시체중)
+n_baby_pr1_low$재원기간  <-as.numeric(n_baby_pr1_low$재원기간)
+
+
+var_label(n_baby_pr1_low) <- list(project1_group = "Group", Apgar.Score1_v2 = "apgar score≥7 (1min)", Apgar.Score5_v2="apgar score≥7 (5min)", 
+                          출생시체중 = "출생시체중(kg)", 병실 = "NICU입원여부", 분만형태_코드 = "c/sec 유무")
+
+print(dfSummary(n_baby_pr1_low, plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+#### **High risk**
+```{r}
+n_baby_pr1_high<-  n_baby_score[c(2:5,10,13:18,29:31,41:43,52:55,71,80,85:86,96:97,38:39,109)] %>% 
+  filter(group_score == "high_risk")
+
+n_baby_pr1_high$유도분만 <-n_baby_pr1_high$유도분만 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_high$성별 <-n_baby_pr1_high$성별 %>% factor(levels=c(0,1), labels =c("Female","Male"))
+n_baby_pr1_high$분만형태_코드 <- n_baby_pr1_high$분만형태_코드 %>% factor(levels =c(0,1), labels = c("No", "Yes"))
+n_baby_pr1_high$병실 <- n_baby_pr1_high$병실 %>% factor(levels =c(0,1), labels = c("No", "Yes"))
+
+n_baby_pr1_high$Apgar.Score1_v2 <-n_baby_pr1_high$Apgar.Score1_v2  %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)")) 
+n_baby_pr1_high$Apgar.Score5_v2 <-n_baby_pr1_high$Apgar.Score5_v2 %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)"))
+
+n_baby_pr1_high$PROM <-n_baby_pr1_high$PROM %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_high$태변착색 <-n_baby_pr1_high$태변착색 %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_high$True.knot <-n_baby_pr1_high$True.knot %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_high$Nuchal.cord <-n_baby_pr1_high$Nuchal.cord %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_high$산소흡입 <-n_baby_pr1_high$산소흡입 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr1_high$심폐소생술.유무 <-n_baby_pr1_high$심폐소생술.유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+
+n_baby_pr1_high$치료결과 <-n_baby_pr1_high$치료결과 %>% factor(levels=c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"), labels =c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"))
+
+n_baby_pr1_high$출생시체중 <-as.numeric(n_baby_pr1_high$출생시체중)
+n_baby_pr1_high$재원기간  <-as.numeric(n_baby_pr1_high$재원기간)
+
+
+var_label(n_baby_pr1_high) <- list(project1_group = "Group", Apgar.Score1_v2 = "apgar score≥7 (1min)", Apgar.Score5_v2="apgar score≥7 (5min)", 
+                          출생시체중 = "출생시체중(kg)", 병실 = "NICU입원여부", 분만형태_코드 = "c/sec 유무")
+
+print(dfSummary(n_baby_pr1_high, plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+
+
+### **[Table 1.3] **descriptive statistics of Maternal characteristics** {.tabset}
+
+#### **low_risk**{.tabset}
+##### **[All group]**
+```{r}
+theme_gtsummary_compact()
+
+pr1_df_score_low %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[1st_group]**
+```{r}
+pr1_df_score_low_1 <- pr1_df_score_low %>% 
+  filter(project1_sub_group == "1st_group")
+
+pr1_df_score_low_1 %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[2nd_group]**
+```{r}
+pr1_df_score_low_2 <- pr1_df_score_low %>% 
+  filter(project1_sub_group == "2nd_group")
+
+pr1_df_score_low_2 %>%  
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[3rd_group]**
+```{r}
+pr1_df_score_low_3 <- pr1_df_score_low %>% 
+  filter(project1_sub_group == "3rd_group")
+
+pr1_df_score_low_3 %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[4th_group]**
+```{r}
+pr1_df_score_low_4 <- pr1_df_score_low %>% 
+  filter(project1_sub_group == "4th_group")
+
+pr1_df_score_low_4 %>%  
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+#### **high_risk**{.tabset}
+##### **[All_group]**
+```{r}
+pr1_df_score_high %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[1st_group]**
+```{r}
+pr1_df_score_high_1 <- pr1_df_score_high %>% 
+  filter(project1_sub_group == "1st_group")
+
+pr1_df_score_high_1 %>%  
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[2nd_group]**
+```{r}
+pr1_df_score_high_2 <- pr1_df_score_high %>% 
+  filter(project1_sub_group == "2nd_group")
+
+pr1_df_score_high_2 %>%  
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[3rd_group]**
+```{r}
+pr1_df_score_high_3 <- pr1_df_score_high %>% 
+  filter(project1_sub_group == "3rd_group")
+
+pr1_df_score_high_3 %>%  
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+
+### **[Table 1.4] **descriptive statistics of Neonatal outcome** {.tabset}
+
+#### **low_risk**{.tabset}
+##### **[All_group]**
+```{r}
+n_baby_pr1_low  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[1st_group]**
+```{r}
+n_baby_pr1_low_1 <- n_baby_pr1_low %>% 
+  filter(project1_sub_group == "1st_group")
+
+n_baby_pr1_low_1  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[2nd_group]**
+```{r}
+n_baby_pr1_low_2 <- n_baby_pr1_low %>% 
+  filter(project1_sub_group == "2nd_group")
+
+n_baby_pr1_low_2  %>%
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[3rd_group]**
+```{r}
+n_baby_pr1_low_3 <- n_baby_pr1_low %>% 
+  filter(project1_sub_group == "3rd_group")
+
+n_baby_pr1_low_3  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[4th_group]**
+```{r}
+n_baby_pr1_low_4 <- n_baby_pr1_low %>% 
+  filter(project1_sub_group == "4th_group")
+
+n_baby_pr1_low_4  %>%
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+#### **high_risk**{.tabset}
+##### **[All_group]**
+```{r}
+n_baby_pr1_high  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[1st_group]**
+```{r}
+n_baby_pr1_high_1 <- n_baby_pr1_high %>% 
+  filter(project1_sub_group == "1st_group")
+
+n_baby_pr1_high_1  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[2nd_group]**
+```{r}
+n_baby_pr1_high_2 <- n_baby_pr1_high %>% 
+  filter(project1_sub_group == "2nd_group")
+
+n_baby_pr1_high_2  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+##### **[3rd_group]**
+```{r}
+n_baby_pr1_high_3 <- n_baby_pr1_high %>% 
+  filter(project1_sub_group == "3rd_group")
+
+n_baby_pr1_high_3  %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)", digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```

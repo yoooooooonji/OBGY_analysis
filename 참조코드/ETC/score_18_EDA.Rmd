@@ -1,0 +1,148 @@
+---
+title: "OBGY_project1_score_over_18_EDA"
+author : 노윤지
+output: html_document
+date: "2022-11-22"
+---
+
+```{r env, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warnings= FALSE)
+library(tidyverse)
+library(knitr)
+library(gtsummary)
+library(labelled)
+library(summarytools)
+library(kableExtra)
+library(magrittr)
+```
+
+```{r warning = FALSE, message = FALSE}
+source("R_code/find_Preg_Date.R")
+source("R_code/cohort_preg_date.R")
+source("R_code/split_group.R")
+source("R_code/project1_dataset.R")
+source("R_code/OBGY_Project1_model_dataset.R")
+source("R_code/project1_score.R")
+```
+
+
+### **[Table 1.1] Summary of Maternal characteristics**
+```{r}
+
+mom_18$twin <- mom_18$twin %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$전자간증 <- mom_18$전자간증 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$PIH임신중고혈압 <- mom_18$PIH임신중고혈압 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$고혈압 <- mom_18$고혈압 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+
+mom_18$산과력_출산력P_1 <-mom_18$산과력_출산력P_1  %>% factor(levels=c(0,1,2,3), labels = c("0","1","2","≥3"))
+mom_18$산과력_출산력A_1 <-mom_18$산과력_출산력A_1  %>% factor(levels=c(0,1,2,3), labels = c("0","1","2","≥3"))
+
+mom_18$저체중아 <- mom_18$저체중아 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$태아성장지연 <- mom_18$태아성장지연 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$태반조기박리 <- mom_18$태반조기박리 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$부인과수술력 <- mom_18$부인과수술력 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$자궁봉축술 <- mom_18$자궁봉축술 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+
+mom_18$입원횟수 <- mom_18$입원횟수 %>% factor(levels = c(0,1,2,3,4,5,6), labels = c("0","1","2","3","4","5","6"))
+mom_18$첫투약시기 <- mom_18$첫투약시기 %>% factor(levels = c(0,1,2), labels = c("other","28주미만","28to34"))
+
+mom_18$태아성장제한 <- mom_18$태아성장제한 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$임신당뇨병 <- mom_18$임신당뇨병 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$임신부종 <- mom_18$임신부종 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$자간증 <- mom_18$자간증 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$수축억제제 <- mom_18$수축억제제 %>% factor(levels = c(0,1), labels = c("No","Yes"))
+mom_18$GA_week <- as.factor(mom_18$GA_week) 
+mom_18$입원총기간 <- mom_18$입원총기간 %>% factor(levels = c(1,2,3,4,5), labels = c("1day","2day","3day","4to10","over10"))
+
+mom_18$GA_week <- as.numeric(mom_18$GA_week)
+mom_18$score <- as.numeric(mom_18$score)
+
+var_label(mom_18) <- list(project1_group = "Group(control/test)", age = "Age", GA_week = "Gestational wks of delivery", twin = "Twin", 산과력_출산력P_1 = "Parity P", 산과력_출산력A_1 = "Parity A")
+
+print(dfSummary(mom_18[c(4,7,8,12,14,15,19,20,24,43,33,34,35,40,43,50,51:60)], plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+
+### **[Table 1.2] Summary of Neonatal outcome**
+
+```{r}
+
+baby_18$유도분만 <-baby_18$유도분만 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$성별 <-baby_18$성별 %>% factor(levels=c(0,1), labels =c("Female","Male"))
+
+baby_18$분만형태_코드 <- baby_18$분만형태_코드 %>% factor(levels =c(0,1), labels = c("No", "Yes"))
+baby_18$병실 <- baby_18$병실 %>% factor(levels =c(0,1), labels = c("No", "Yes"))
+
+baby_18$Apgar.Score1_v2 <-baby_18$Apgar.Score1_v2  %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)")) 
+baby_18$Apgar.Score5_v2 <-baby_18$Apgar.Score5_v2 %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)"))
+
+baby_18$PROM <-baby_18$PROM %>%factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$태변착색 <-baby_18$태변착색 %>%factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$True.knot <-baby_18$True.knot %>%factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$Nuchal.cord <-baby_18$Nuchal.cord %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$산소흡입 <-baby_18$산소흡입 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$심폐소생술.유무 <-baby_18$심폐소생술.유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$치료결과 <-baby_18$치료결과 %>% factor(levels=c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"), labels =c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"))
+
+baby_18$BPS기관지폐형성이상 <-baby_18$BPS기관지폐형성이상 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$Club_foot <-baby_18$Club_foot %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$NEC_괴사성장염 <-baby_18$NEC_괴사성장염 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$PDA <-baby_18$PDA %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$Pulmonary_sequestration <-baby_18$Pulmonary_sequestration %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$RDS_호흡곤란증후군 <-baby_18$RDS_호흡곤란증후군 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$미숙아망막병증 <-baby_18$미숙아망막병증 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$성장지연 <-baby_18$성장지연 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$신생아패혈증 <-baby_18$신생아패혈증 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$신생아황달 <-baby_18$신생아황달 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+baby_18$저체중아_2.5kg <-baby_18$저체중아_2.5kg %>% factor(levels=c(0,1), labels =c("No","Yes"))
+
+baby_18$출생시체중 <-as.numeric(baby_18$출생시체중)
+baby_18$재원기간  <-as.numeric(baby_18$재원기간)
+baby_18$Apgar.Score1 <- as.numeric(baby_18$Apgar.Score1)
+baby_18$Apgar.Score5 <- as.numeric(baby_18$Apgar.Score5)
+
+var_label(baby_18) <- list(project1_group = "Group", #Apgar.Score1_v2 = "apgar score≥7 (1min)", Apgar.Score5_v2="apgar score≥7 (5min)", 
+                          출생시체중 = "출생시체중(kg)", 병실 = "NICU입원여부", 분만형태_코드 = "c/sec 유무")
+
+print(dfSummary(baby_18[c(2,4,5,13:18, 29:31,10, 11,12,41,42,43,45,52:55,71,80,85,86,96,97,38)], plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+```{r}
+theme_gtsummary_compact()
+```
+
+### **[Table 1.3] **descriptive statistics of Maternal characteristics** 
+```{r}
+mom_18 %>% 
+  ungroup() %>% 
+  select(4,7,8,12,14,15,19,20,24,43,33,34,35,40,43,50,51:60) %>% 
+  tbl_summary(by = project1_group, statistic = list(all_continuous() ~ "{mean} ({sd})"), missing_text = "(Missing value)", 
+              digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```
+
+### **[Table 1.4] **descriptive statistics of Neonatal outcome** 
+```{r}
+baby_18$Apgar.Score1 <- as.numeric(baby_18$Apgar.Score1)
+baby_18$Apgar.Score5 <- as.numeric(baby_18$Apgar.Score5)
+
+baby_18 %>% 
+  select(2,4,5,13:18, 29:31,10, 11,12,41,42,43,45,52:55,71,80,85,86,96,97,38) %>%
+  tbl_summary(by = project1_group,
+              type = list(Apgar.Score1 ~ 'continuous',
+                          Apgar.Score5 ~ 'continuous'),
+              statistic = list(all_continuous() ~ "{mean} ({sd})", 
+                               Apgar.Score1 ~ "{mean} ({sd})",
+                              Apgar.Score5 ~ "{mean} ({sd})"),
+              missing_text = "(Missing value)",
+              digits = list(all_continuous() ~ c(1, 2), all_categorical() ~ c(0, 1))) %>%
+  add_overall() %>%
+  add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>%
+  bold_labels()
+
+```

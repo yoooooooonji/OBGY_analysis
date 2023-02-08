@@ -1,0 +1,105 @@
+---
+title: "OBGY_Project_2_EDA_v2"
+author: "노윤지"
+date: "2022-10-17"
+output: html_document
+---
+
+```{r env, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warnings= FALSE)
+library(tidyverse)
+library(knitr)
+
+library(gtsummary)
+library(labelled)
+library(summarytools)
+library(kableExtra)
+library(magrittr)
+```
+
+```{r,warning = FALSE, message = FALSE}
+source("R_code/find_Preg_Date.R")
+source("R_code/cohort_preg_date.R")
+source("R_code/split_group.R")
+source("R_code/project2_dataset.R")
+source("R_code/project2_drug.R")
+
+```
+
+# Maternal characteristics
+### **Maternal characteristics**
+#### **[Table 1.1] Summary of Maternal characteristics** 
+```{r}
+pr2_df_mom$type <-pr2_df_mom$type %>% factor(levels=c("D","A"), labels = c("Labor","Miscarriage"))
+pr2_df_mom$twin <-pr2_df_mom$twin %>% factor(levels=c(0,1), labels = c("No","Yes"))
+pr2_df_mom$산과력_출산력T_1 <-pr2_df_mom$산과력_출산력T_1  %>% factor(levels=c(0,1,2), labels = c("0","1","≥2"))
+pr2_df_mom$산과력_출산력P_1 <-pr2_df_mom$산과력_출산력P_1  %>% factor(levels=c(0,1,2), labels = c("0","1","≥2"))
+pr2_df_mom$산과력_출산력A_1 <-pr2_df_mom$산과력_출산력A_1 %>% factor(levels=c(0,1,2), labels = c("0","1","≥2"))
+pr2_df_mom$산과력_출산력SA_1<-pr2_df_mom$산과력_출산력SA_1 %>% factor(levels=c(0,1,2), labels = c("0","1","≥2"))
+pr2_df_mom$산과력_출산력AA_1 <-pr2_df_mom$산과력_출산력AA_1%>% factor(levels=c(0,1,2), labels = c("0","1","≥2"))
+pr2_df_mom$산과력_출산력L_1 <-pr2_df_mom$산과력_출산력L_1  %>% factor(levels=c(0,1,2), labels = c("0","1","≥2"))
+pr2_df_mom$GA <-as.numeric(pr2_df_mom$GA)
+
+var_label(pr2_df_mom) <- list(project2_group = "Group", type = "Type", age = "Age", GA = "Gestational wks of delivery", twin = "Twin", 산과력_출산력T_1 = "Parity_T",산과력_출산력P_1 = "Parity P", 산과력_출산력A_1 = "Parity A", 산과력_출산력AA_1 = "Parity AA",산과력_출산력SA_1 = "Parity SA", 산과력_출산력L_1 = "Parity L")
+
+pr2_df_mom_z <- pr2_df_mom[c(4,5,7,8,9,11:18,20:53)]
+
+print(dfSummary(pr2_df_mom_z, plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+### **Neonatal Outcome**
+#### **[Table 1.2] Summary of Maternal characteristics**
+```{r}
+n_baby_pr2$유도분만 <-n_baby_pr2$유도분만 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$성별 <-n_baby_pr2$성별 %>% factor(levels=c(0,1), labels =c("Female","Male"))
+n_baby_pr2$감염정보_유무 <-n_baby_pr2$감염정보_유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$수직감염_유무 <-n_baby_pr2$수직감염_유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$Maternal.Antenatal.History_유무 <-n_baby_pr2$Maternal.Antenatal.History_유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$분만형태_코드 <-n_baby_pr2$분만형태_코드 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+
+n_baby_pr2$Apgar.Score1_v2 <-n_baby_pr2$Apgar.Score1_v2  %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)")) 
+n_baby_pr2$Apgar.Score5_v2 <-n_baby_pr2$Apgar.Score5_v2 %>% factor(levels=c(0,1), labels =c("No(<7)","Yes(≥7)"))
+
+n_baby_pr2$PROM <-n_baby_pr2$PROM %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$태변착색 <-n_baby_pr2$태변착색 %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$True.knot <-n_baby_pr2$True.knot %>%factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$Nuchal.cord <-n_baby_pr2$Nuchal.cord %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$산소흡입 <-n_baby_pr2$산소흡입 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$심폐소생술.유무 <-n_baby_pr2$심폐소생술.유무 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$머리 <-n_baby_pr2$머리 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$얼굴 <-n_baby_pr2$얼굴%>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$눈 <-n_baby_pr2$눈 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$제대 <-n_baby_pr2$제대 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$근골격계 <-n_baby_pr2$근골격계 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$위장관계 <-n_baby_pr2$위장관계 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$비뇨기계 <-n_baby_pr2$비뇨기계 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$생식기계 <-n_baby_pr2$생식기계 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$신경계 <-n_baby_pr2$신경계 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$병실 <-n_baby_pr2$병실 %>% factor(levels=c(0,1), labels =c("No","Yes"))
+n_baby_pr2$치료결과 <-n_baby_pr2$치료결과 %>% factor(levels=c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"), labels =c("48시간 이내사망", "48시간 이후사망", "경쾌", "완쾌", "진단만", "치료안함", "호전안됨"))
+n_baby_pr2$출생시체중 <-as.numeric(n_baby_pr2$출생시체중)
+n_baby_pr2$재원기간  <-as.numeric(n_baby_pr2$재원기간)
+n_baby_pr2$태반_중량  <-as.numeric(n_baby_pr2$태반_중량)
+n_baby_pr2$태반_길이 <-as.numeric(n_baby_pr2$태반_길이)
+
+var_label(n_baby_pr2) <- list(project2_group = "Group", Apgar.Score1_v2 = "apgar score≥7 (1min)", Apgar.Score5_v2="apgar score≥7 (5min)", 
+                          태반_중량 = "태반중량(g)", 출생시체중 = "출생시체중(kg)")
+
+n_baby_pr2_z <- n_baby_pr2[-c(1,9,11,12,32,35,36,37,39)] 
+print(dfSummary(n_baby_pr2_z, plain.ascii = FALSE, style = "multiline", graph.magnif = 0.75, varnumbers=FALSE, valid.col = TRUE, display.labels=TRUE,
+                headings=FALSE), method = 'render')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
